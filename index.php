@@ -15,9 +15,10 @@ if (file_exists("content.html") && time() - $CACHE_DURATION < $TIME_CACHE && $TI
 else {
     ob_start();
 
-$HOSTS = array("fb" => "Facebook",  "pascal" => "Pascal", "chic" => "Chic", "nile" => "Nile", "rodgers" => "Rodgers", "bernard" => "Bernard", "edwards" => "Edwards", "pas" => "Pas", "cal" => "Cal", "titan" => "Titan", "bigcountry" => "Big Country", "sledge" => "Sledge", "sister" => "Sister");
-$SHORT_GPU_NAMES = array("GeForce GTX TITAN X" => "Titan X Maxwell", "TITAN X (Pascal)" => "Titan X Pascal", "TITAN Xp" => "Titan Xp", "GeForce GTX 980" => "GTX 980", "Tesla P100-PCIE-16GB" => "Tesla P100", "GeForce RTX 2080 Ti" => "RTX 2080 Ti");
-$SHORTER_GPU_NAMES = array("GeForce GTX TITAN X" => "X Max", "TITAN X (Pascal)" => "X Pas", "TITAN Xp" => "Xp", "GeForce GTX 980" => "GTX 980", "Tesla K20m" => "K20m", "Tesla M2090" => "M2090", "Tesla P100-PCIE-16GB" => "P100", "GeForce RTX 2080 Ti" => "2080 Ti");
+// $HOSTS = array("denizpower" => "Deniz Power", "tepegoz" => "Tepegoz", "nian" => "Nian", "zahhak" => "Zahhak", "curupira" => "Curupira", "bubota" => "Bubota", "ddraig" => "Ddraig", "sphinx" => "Sphinx");
+$HOSTS = array("Server1" => "Server1", "Server2" => "Server2", "Server3" => "Server3", "Server4" => "Server4", "Server5" => "Server5");
+$SHORT_GPU_NAMES = array("GeForce GTX TITAN X" => "Titan X Maxwell", "TITAN X (Pascal)" => "Titan X Pascal", "TITAN Xp" => "Titan Xp", "GeForce GTX 980" => "GTX 980", "Tesla P100-PCIE-16GB" => "Tesla P100", "GeForce GTX 1080 Ti" => "GTX 1080 Ti", "GeForce RTX 2080 Ti" => "RTX 2080 Ti");
+$SHORTER_GPU_NAMES = array("GeForce GTX TITAN X" => "X Max", "TITAN X (Pascal)" => "X Pas", "TITAN Xp" => "Xp", "GeForce GTX 980" => "GTX 980", "Tesla K20m" => "K20m", "Tesla M2090" => "M2090", "Tesla P100-PCIE-16GB" => "P100", "GeForce GTX 1080 Ti" => "1080Ti", "GeForce RTX 2080 Ti" => "2080Ti");
 $GPU_COLS_LIST = array("index", "uuid",   "name", "memory.used", "memory.total", "utilization.gpu", "utilization.memory", "temperature.gpu", "timestamp");
 $GPU_PROC_LIST = array("timestamp", "gpu_uuid", "used_gpu_memory", "process_name", "pid");
 $CPU_COLS_LIST = array("average_use","total_nb_proc");
@@ -151,8 +152,8 @@ else
 if (isset($_POST["host"]) && isset($HOSTS[$_POST["host"]])) {
     try {
         if (isset($_POST["reset"])) throw new Exception("reset");
-        $name = preg_replace('/[^\p{L}\p{N}-_.,+\/#&]/u', " ", $_POST["name"]);
-        $comment = preg_replace('/[^\p{L}\p{N}-_.,+\/#&]/u', " ", $_POST["comment"]);
+        $name = $_POST["name"]; //preg_replace('/[^\p{L}\p{N}-_.,+\/#&]/u', " ", $_POST["name"]);
+        $comment = $_POST["comment"]; //preg_replace('/[^\p{L}\p{N}-_.,+\/#&]/u', " ", $_POST["comment"]);
         if (preg_match('/^ *(([0-9]+)d)? ?(([0-9]+)h)? *$/i', $_POST["date"], $matches)) {
             $interv = new DateInterval("P".($matches[2] ? $matches[2] : 0)."DT".(isset($matches[4]) ? $matches[4] : 0)."H");
             $date = new DateTime();
@@ -187,7 +188,7 @@ if (!isset($_GET["content"]))
     include("header.html");
 ?>
 <div class="page-header">
-    <h1>GPU Status <small class="hidden-xs">(Refreshed every 30 seconds)</small><a href="https://github.com/ThomasRobertFr/gpu-monitor" style="float:right"><img src="css/gh.png" height="20px"></a></h1>
+<h1><img src="./css/nwpu.png" height="70px"/> NPU CVR Lab - GPU Status<small class="hidden-xs"> (Refreshed every 30 seconds)</small><a href="https://github.com/danqu130/gpu-monitor" style="float:right"><img src="css/gh.png" height="30px"></a></h1>
 </div>
 <?php
 
@@ -200,14 +201,14 @@ foreach ($HOSTS as $hostname => $hosttitle) {
     // USAGE OF LOCAL DISK
     $disk_usage = array();
     foreach(file('data/'.$hostname.'_local.txt') as $local_usage) {
-        if (preg_match("#^([0-9,]+)([KMGT])\s*/local/(\w+)$#", $local_usage, $matches)) {
+        if (preg_match("#^([0-9.]+)([KMGT])\s*/home/(\w+)$#", $local_usage, $matches)) {
             $multiplier = 1;
             if ($matches[2] == "K") $multiplier = 0.001 * 0.001;
             if ($matches[2] == "M") $multiplier = 0.001;
             if ($matches[2] == "G") $multiplier = 1;
             if ($matches[2] == "T") $multiplier = 1000;
             $val = floatval(str_replace(",", ".", $matches[1])) * $multiplier;
-            if ($val > 10)
+            if ($val > 2)
                 $disk_usage[$matches[3]] = $val;
         }
     }
@@ -310,7 +311,7 @@ foreach ($HOSTS as $hostname => $hosttitle) {
 
     $nbCpu = (int) fgets($f);
     $uptime = fgets($f);
-    preg_match("#load average: ([0-9\,]+), #", $uptime, $uptime);
+    preg_match("#load average: ([0-9\.]+), #", $uptime, $uptime);
     $cpu = round((float)str_replace(",",".", $uptime[1]) / $nbCpu * 100);
 
     fclose($f);
@@ -342,9 +343,9 @@ foreach ($HOSTS as $hostname => $hosttitle) {
         <tr>
             <th class="th-machine" rowspan="2"><h2><a href="#<?php echo $hostname ?>"><?php echo $hosttitle; ?></a></h2><br>
             <small>@ <?php echo round($deltaT).$deltaTUnit.$deltaTDirection ?></small></th>
-            <th class="th-mem">RAM</th>
-            <th class="th-mem">CPU</th>
-            <th class="th-mem">SSD</th>
+            <th class="th-mem">RAM %</th>
+            <th class="th-mem">CPU %</th>
+            <th class="th-mem">SSD Storage</th>
             <th></th>
         </tr>
         <tr>
@@ -354,7 +355,7 @@ foreach ($HOSTS as $hostname => $hosttitle) {
                 if ($ram["usage"] > 35) $bar_status = "warning";
                 if ($ram["usage"] > 70) $bar_status = "danger";
                 ?>
-                <div class="progress progress-<?php echo $bar_status ?>" data-toggle="tooltip" data-placement="top" title="<?php printf("%d/%d Go", $ram['used'], $ram['total']); ?>">
+                <div class="progress progress-<?php echo $bar_status ?>" data-toggle="tooltip" data-placement="top" title="<?php printf("%d/%d GB", $ram['used'], $ram['total']); ?>">
                     <div class="progress-bar progress-bar-<?php echo $bar_status ?>" role="progressbar" aria-valuenow="<?php echo $ram["usage"] ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $ram["usage"] ?>%">
                         <?php echo $ram["usage"] ?>%
                     </div>
@@ -378,7 +379,7 @@ foreach ($HOSTS as $hostname => $hosttitle) {
                 if ($disk["usage"] > 35) $bar_status = "warning";
                 if ($disk["usage"] > 70) $bar_status = "danger";
                 ?>
-                <div class="progress progress-<?php echo $bar_status ?>" data-toggle="tooltip" data-placement="top" title="<?php printf("%d/%d Go", $disk['used'], $disk['total']); ?>">
+                <div class="progress progress-<?php echo $bar_status ?>" data-toggle="tooltip" data-placement="top" title="<?php printf("%d/%d GB", $disk['used'], $disk['total']); ?>">
                     <div class="progress-bar progress-bar-<?php echo $bar_status ?>" role="progressbar" aria-valuenow="<?php echo $disk["usage"] ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $disk["usage"] ?>%">
                         <?php echo $disk["usage"] ?>%
                     </div>
@@ -399,7 +400,7 @@ foreach ($HOSTS as $hostname => $hosttitle) {
                         aria-valuenow="<?php echo $volume_percent_disp ?>"
                         aria-valuemin="0" aria-valuemax="100"
                         style="width: <?php echo $volume_percent_disp ?>%">
-                            <?php echo $volume_percent ?>% <?php echo round($volume) ?>Go - <?php echo $user ?>
+                            <?php echo $volume_percent ?>% <?php echo round($volume) ?>GB - <?php echo $user ?>
                         </div>
                     </div>
                 <?php } ?>
@@ -418,10 +419,10 @@ foreach ($HOSTS as $hostname => $hosttitle) {
         <tr>
             <th class="th-id">#</th>
             <th class="th-name">Name</th>
-            <th class="th-mem">Memory</th>
-            <th class="th-usage">GPU</th>
+            <th class="th-mem">GPU Memory</th>
+            <th class="th-usage">GPU-Util</th>
             <th class="th-comment">Reservation</th>
-            <th class="th-processes"><span class="hidden-xs">Processes <span class="label label-default">pid@user (RAM)</span></span></th>
+            <th class="th-processes"><span class="hidden-xs">Processes <span class="label label-default">pid@user (RAM%)</span></span></th>
         </tr>
     <?php foreach ($gpus as $gpu) { ?>
         <tr>
@@ -429,7 +430,7 @@ foreach ($HOSTS as $hostname => $hosttitle) {
             <td>
                 <span class="hidden-xs"><?php echo $SHORT_GPU_NAMES[$gpu['name']] ? '<span data-toggle="tooltip" title="'.$gpu['name'].'">'.$SHORT_GPU_NAMES[$gpu['name']].'</span>' : $gpu['name']; ?></span>
                 <span class="visible-xs-inline"><?php echo $SHORTER_GPU_NAMES[$gpu['name']] ? '<span data-toggle="tooltip" title="'.$gpu['name'].'">'.$SHORTER_GPU_NAMES[$gpu['name']].'</span>' : $gpu['name']; ?></span>
-                (<?php echo round($gpu['memory.total'] / 1000) ?> Go)
+                (<?php echo round($gpu['memory.total'] / 1000) ?> GB)
             </td>
             <td>
                 <?php
