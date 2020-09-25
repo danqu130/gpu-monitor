@@ -15,7 +15,6 @@ if (file_exists("content.html") && time() - $CACHE_DURATION < $TIME_CACHE && $TI
 else {
     ob_start();
 
-// $HOSTS = array("denizpower" => "Deniz Power", "tepegoz" => "Tepegoz", "nian" => "Nian", "zahhak" => "Zahhak", "curupira" => "Curupira", "bubota" => "Bubota", "ddraig" => "Ddraig", "sphinx" => "Sphinx");
 $HOSTS = array("Server1" => "Server1", "Server2" => "Server2", "Server3" => "Server3", "Server4" => "Server4", "Server5" => "Server5");
 $SHORT_GPU_NAMES = array("GeForce GTX TITAN X" => "Titan X Maxwell", "TITAN X (Pascal)" => "Titan X Pascal", "TITAN Xp" => "Titan Xp", "GeForce GTX 980" => "GTX 980", "Tesla P100-PCIE-16GB" => "Tesla P100", "GeForce GTX 1080 Ti" => "GTX 1080 Ti", "GeForce RTX 2080 Ti" => "RTX 2080 Ti");
 $SHORTER_GPU_NAMES = array("GeForce GTX TITAN X" => "X Max", "TITAN X (Pascal)" => "X Pas", "TITAN Xp" => "Xp", "GeForce GTX 980" => "GTX 980", "Tesla K20m" => "K20m", "Tesla M2090" => "M2090", "Tesla P100-PCIE-16GB" => "P100", "GeForce GTX 1080 Ti" => "1080Ti", "GeForce RTX 2080 Ti" => "2080Ti");

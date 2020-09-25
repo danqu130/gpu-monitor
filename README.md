@@ -100,7 +100,7 @@ sudo sevice cron restart
 ```
 # Edit full-caps infos below
 # Check if monitoring running each 5 min
-*/5 * * * * /SCRIPT-LOCATION/gpu-check.sh HOSTNAME HTTP_SERVER > /dev/null 2>&1
+*/5 * * * * /home/user/gpu-moniter/scripts/gpu-check.sh [server_name] [user] [ip] [port] > /dev/null 2>&1
 # Kill and restart the monitoring each 2 hours to cleanup the ouptput files of the monitors (optional)
 # 0 */2 * * * /SCRIPT-LOCATION/gpu-check.sh kill > /dev/null 2>&1; /SCRIPT-LOCATION/gpu-check.sh HOSTNAME HTTP_SERVER > /dev/null 2>&1
 ```

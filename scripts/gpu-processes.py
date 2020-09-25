@@ -39,7 +39,7 @@ if len(pids) > 0:
         xs = re.sub(" +", " ", re.sub("^ +", "", x)).split(" ")
         for pid in pids:
             if (int(xs[1]) == int(pid) or int(xs[2]) == int(pid)) and xs[0] != "":
-                if pid not in childs: 
+                if pid not in childs:
                     childs[pid] = []
                 childs[pid].append(xs[0])
 
